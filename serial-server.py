@@ -15,17 +15,36 @@ def Serial_Connection(port_stval, baudrate_val, timeout_val):
         return (f"Error: '{err}'")
     return serial_port
 
-def main():
-    serial_port = Serial_Connection(serial_port, serial_baudrate, serial_timeout)
-    print("Port Status:", serial_port.is_open)
+def Serial_Write_One_Time(serial_port, message,pause_time):
+    serial_port.write(message)
+    serial_port.reset_output_buffer()
+    time.sleep(pause_time)
+    print("message sent")
 
+def Serial_Write_Continuously(serial_port, message,pause_time):
     #--------- Write loop
     while (serial_port.is_open):
-        serial_port.write(b'hello2\n')
-        serial_port.reset_output_buffer()
-        time.sleep(2)
-        print("sent")
+        Serial_Write_One_Time(serial_port, message,pause_time)
+
+    serial_port.write(message)
+    serial_port.reset_output_buffer()
+    time.sleep(pause_time)
+    print("message sent")
+    return 0
+
+def Serial_Read_One_Time(serial_port):
+    message = serial_port.readline()
+    print("Message received: ", message)
+    return message
+
+def main():
+    serial_port = Serial_Connection("/dev/ttyUSB0", 115200, 5.0)
+    print("Port Status:", serial_port.is_open)
+    message = b'hello2\n'
+    pause_time = 1.0
+    Serial_Write_Continuously(serial_port, message,pause_time)
     serial_port.close()
+
 
 if __name__ == "__main__":
     main()
